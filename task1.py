@@ -17,7 +17,7 @@ def getFileNames(train_file, test_file, output_file):
     print("Testing file: ", test_file)
     print("Output file: ", output_file)
 
-def readTrainFile(file, classes, features):
+def readFile(file, classes, features):
     global n_classes
     global n_features
     global n_objects
@@ -32,24 +32,6 @@ def readTrainFile(file, classes, features):
         classes.append(line.split()[0])
         for j in range(n_features):
             feature.append(line.split()[j+1])
-        features.append(feature)
-    f.close()
-
-def readTestFile(file, classes, features):
-    global n_classes
-    global n_features
-    global n_objects
-    f = open(file, "r")
-    header = f.readline()
-    n_classes = int(header.split()[0])
-    n_features = int(header.split()[1])
-    n_objects = int(header.split()[2])
-    for i in range(n_objects):
-        feature = []
-        line = f.readline()
-        classes.append(line.split()[0])
-        for j in range(1, n_features+1):
-            feature.append(line.split()[j])
         features.append(feature)
     f.close()
 
@@ -101,7 +83,7 @@ def standardise(p, mean_values, desviations):
 def train(file, mean_values, desviations):
     classes = []
     features = []
-    readTrainFile(file, classes, features)
+    readFile(file, classes, features)
     calculateValues(mean_values, desviations, features)
     elements_for_class = numberElementsClass(file, classes)
     p = calculateGravityCenter(classes, features, elements_for_class)
@@ -115,7 +97,7 @@ def train(file, mean_values, desviations):
 def test(file, mean_values, desviations, p):
     classes = []
     features = []
-    readTestFile(file, classes, features)
+    readFile(file, classes, features)
     error = 0
     for i in range(n_objects):
         for j in range(n_features):
