@@ -130,8 +130,8 @@ def test(file, mean_values, desviations, p):
                     assigned_class = k + 1
         if int(classes[i]) != assigned_class: error = error + 1;
         print(i+1, classes[i], assigned_class)
-    print("Error rate ", round(100*error /360, 1), "%")
-    print("Error rate ", round(100*error /600, 1), "%")
+    print("Error rate ", round(100*error /n_objects, 1), "%")
+    # print("Error rate ", round(100*error /600, 1), "%") in the Pascal example the error is 8.9%, meaning the nubmer of objects for the train file was used instead of the test file
 
 
 def main():
