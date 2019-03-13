@@ -69,11 +69,12 @@ def calculateGravityCenter(classes, features, elements_for_class):
             p[i][j] = p[i][j] / elements_for_class[i]
     return p
 
-def printMatrix(matrix):
+def printMatrix(output, matrix):
     for i in range(n_classes):
         for j in range(n_features):
-            print(matrix[i][j], end=" ")
-        print("")
+            decimal = "%.3f" % matrix[i][j]
+            output.write(str(decimal)+"\t")
+        output.write("\n")
 
 def standardise(p, mean_values, desviations):
     for i in range(n_classes):
@@ -81,40 +82,51 @@ def standardise(p, mean_values, desviations):
             p[i][j] = (p[i][j] - mean_values[j])/desviations[j];
 
 def train(file, mean_values, desviations):
+    output = open("results-mine.txt", "w")
     classes = []
     features = []
     readFile(file, classes, features)
     calculateValues(mean_values, desviations, features)
     elements_for_class = numberElementsClass(file, classes)
     p = calculateGravityCenter(classes, features, elements_for_class)
-    print("Class gravity centers before standardisation: ")
-    printMatrix(p)
+    output.write("Class gravity centers before standardisation:\n")
+    printMatrix(output, p)
     standardise(p, mean_values, desviations)
-    print("Class gravity centers after standardisation: ")
-    printMatrix(p)
+    output.write("\nClass gravity centers after standardisation:\n")
+    printMatrix(output, p)
+    output.close()
     return p
 
 def test(file, mean_values, desviations, p):
-    classes = []
-    features = []
-    readFile(file, classes, features)
+    output = open("results-mine.txt", "a")
+    f = open(file, "r")
+    header = f.readline()
+    n_classes = int(header.split()[0])
+    n_features = int(header.split()[1])
+    n_objects = int(header.split()[2])
     error = 0
+    output.write("\nResults of classification:\n")
+    output.write("Object\tTrue class\tAssigned class\n")
     for i in range(n_objects):
-        for j in range(n_features):
-            features[i][j] = (float(features[i][j])-mean_values[j])/desviations[j]
-        dmin = 10e10;
+        feature = []
+        line = f.readline()
+        real_class = int(line.split()[0])
+        for j in range(n_features): feature.append(float(line.split()[j+1]))
+        for j in range(n_features): feature[j] = (feature[j]-mean_values[j])/desviations[j]
+        dmin=10e10
+        distances = [0.0 for i in range(n_classes)]
         for k in range(n_classes):
-            d = 0
-            for j in range(n_features):
-                d = d + (features[i][j]-p[k][j])**2
-                if d < dmin:
-                    dmin = d
-                    assigned_class = k + 1
-        if int(classes[i]) != assigned_class: error = error + 1;
-        print(i+1, classes[i], assigned_class)
-    print("Error rate ", round(100*error /n_objects, 1), "%")
-    # print("Error rate ", round(100*error /600, 1), "%") in the Pascal example the error is 8.9%, meaning the nubmer of objects for the train file was used instead of the test file
-
+            for z in range(n_features):
+                distances[k] = distances[k] + (feature[z]-p[k][z])**2
+        dmin = min(distances)
+        assigned_class = distances.index(dmin) + 1
+        output.write(str(i+1)+"\t"+str(real_class)+"\t"+str(assigned_class)+"\n")
+        if (real_class != assigned_class): error = error+1
+    print("Number of errors: ", error)
+    error = (100*error)/n_objects
+    print("Error rate: %.1f" % error)
+    output.write("\nError rate: "+str("%.1f" % error))
+    output.close()
 
 def main():
     train_file =  "trn.txt"
