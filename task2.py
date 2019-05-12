@@ -2,17 +2,6 @@ import sys
 import math
 import numpy as np
 
-def getFileNames(train_file, test_file, output_file):
-    if len(sys.argv) == 1:
-        print("Using default values. To select your own run the program using: \n\tpython <script> <training file> <testing file> <output file>")
-    else:
-        train_file = sys.argv[1]
-        test_file = sys.argv[2]
-        output_file = sys.argv[3]
-    print("Training file: ", train_file)
-    print("Testing file: ", test_file)
-    print("Output file: ", output_file)
-
 def readFile(file, classes, features):
     global n_classes
     global n_features
@@ -153,8 +142,6 @@ def printStatistics(output_file, matrix):
             output_file.write(str("%.4f" % result)+"\t")
         output_file.write("\n")
 
-    #calcular
-
 def test(output_file, test_file, weights):
     f = open(test_file, "r")
     header = f.readline()
@@ -202,11 +189,11 @@ def train(output_file, train_file, classes, features):
     return calculateWeights(output_file, p, mean_values, desviations)
 
 def main():
-    train_file =  "trn.txt"
-    test_file = "tst.txt"
-    output_file = "results.txt"
+    train_file =  input("Enter train file: ")
+    test_file = input("Enter test file: ")
+    output_file = input("Enter output file: ")
     output = open(output_file, "w")
-    getFileNames(train_file, test_file, output_file)
+
     classes = []
     features = []
     readFile(train_file, classes, features)

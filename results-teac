@@ -1,0 +1,11 @@
+
+ Error correction algorithm.
+
+ Number of correct decision: 4
+ Training set size: 4
+ Number of corrections: 11
+
+ Best weights:
+   1      1.0000
+   2     -3.0000
+   3      3.0000

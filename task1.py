@@ -6,17 +6,6 @@ global n_classes
 global n_features
 global n_objects
 
-def getFileNames(train_file, test_file, output_file):
-    if len(sys.argv) == 1:
-        print("Using default values. To select your own run the program using: \n\tpython <script> <training file> <testing file> <output file>")
-    else:
-        train_file = sys.argv[1]
-        test_file = sys.argv[2]
-        output_file = sys.argv[3]
-    print("Training file: ", train_file)
-    print("Testing file: ", test_file)
-    print("Output file: ", output_file)
-
 def readFile(file, classes, features):
     global n_classes
     global n_features
@@ -129,10 +118,10 @@ def test(file, mean_values, desviations, p):
     output.close()
 
 def main():
-    train_file =  "trn.txt"
-    test_file = "tst.txt"
-    output_file = "result.txt"
-    getFileNames(train_file, test_file, output_file)
+    train_file =  input("Enter train file: ")
+    test_file = input("Enter test file: ")
+    output_file = input("Enter output file: ")
+    
     mean_values = []
     desviations = []
     p = train(train_file, mean_values, desviations)
