@@ -9,7 +9,6 @@ global file_size
 global n_features
 global n_objects
 global selected
-global output
 
 def readFile(file, classes, features):
     global n_classes, n_features, n_objects, file_size, selected
@@ -35,8 +34,7 @@ def readFile(file, classes, features):
     f.close()
 
 def code_object(features, classes):
-    global n_classes
-    global n_features
+    global n_classes, n_features
     #Transform into float
     f = []
     c = []
@@ -57,8 +55,8 @@ def code_object(features, classes):
         X.append(x)
     return X
 
-def train(data, iterations):
-    global n_features, output
+def train(output, data, iterations):
+    global n_features
     v = [0.0 for i in range(n_features+1)]
     new_v = [0.0 for i in range(n_features+1)]
     #bucle
@@ -74,15 +72,14 @@ def train(data, iterations):
                 v = list(map(add, v, y))
                 corrections = corrections + 1
             scalars.append(scalar)
-    print("Training set size: ", n_objects)
-    print("Number of corrections: ", corrections)
-    print("Weight of discriminant function: ", v)
-    # for element in v:
-        # output.write(element+"\t")
+    output.write("\nTraining set size: " + str(n_objects))
+    output.write("\nNumber of corrections: " + str(corrections))
+    output.write("\nWeight of discriminant function:\n")
+    for i in v: output.write(str("\t\t%.3f" % i)+"\n")
     return v
 
-def well_classified(file, v):
-    global selected, output, file_size
+def well_classified(output, file, v):
+    global selected, file_size
     f = open(file, "r")
     header = f.readline()
     well_classified = 0
@@ -100,8 +97,7 @@ def well_classified(file, v):
             else: assigned_class = 2
             if assigned_class == real_class: well_classified = well_classified + 1
     f.close()
-    print("Number of correct decisions: \n", well_classified)
-    print("Number of bad decisions: \n", bad_classified)
+    output.write("\nNumber of correct decisions: " + str(well_classified))
 
 def main():
     train_file =  input("Enter train file: ")
@@ -113,8 +109,8 @@ def main():
     features = []
     readFile(train_file, classes, features)
     data = code_object(features, classes)
-    v = train(data, iterations)
-    well_classified(train_file, v)
+    v = train(output, data, iterations)
+    well_classified(output, train_file, v)
     output.close()
 
 main()

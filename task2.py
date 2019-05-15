@@ -3,9 +3,7 @@ import math
 import numpy as np
 
 def readFile(file, classes, features):
-    global n_classes
-    global n_features
-    global n_objects
+    global n_classes, n_features, n_objects
     f = open(file, "r")
     header = f.readline()
     n_classes = int(header.split()[0])
@@ -15,8 +13,7 @@ def readFile(file, classes, features):
         feature = []
         line = f.readline()
         classes.append(line.split()[0])
-        for j in range(n_features):
-            feature.append(line.split()[j+1])
+        for j in range(n_features): feature.append(line.split()[j+1])
         features.append(feature)
     f.close()
 
@@ -36,19 +33,16 @@ def gravityCenters(classes, features, elements_for_class):
     p = [[0.0 for i in range(n_features)] for j in range(n_classes)]
     for i in range(n_objects):
         clase = int(classes[i]) - 1
-        for j in range(n_features):
-            p[clase][j] = p[clase][j] + float(features[i][j])
+        for j in range(n_features): p[clase][j] = p[clase][j] + float(features[i][j])
     for i in range(n_classes):
-        for j in range(n_features):
-            p[i][j] = p[i][j] / elements_for_class[i]
+        for j in range(n_features): p[i][j] = p[i][j] / elements_for_class[i]
     return p
 
 def printGravityCenters(output_file, gravity_centers):
     index = 1
     for i in gravity_centers:
         output_file.write("P"+str(index)+"\t")
-        for j in i:
-            output_file.write(str("%.3f" % j)+"\t")
+        for j in i: output_file.write(str("%.3f" % j)+"\t")
         index = index + 1
         output_file.write("\n")
 
@@ -56,18 +50,15 @@ def printWeights(output_file, weights):
     index = 1
     for i in weights:
         output_file.write("w"+str(index)+"\t")
-        for j in i:
-            output_file.write(str("%.3f" % j)+"\t")
+        for j in i: output_file.write(str("%.3f" % j)+"\t")
         index = index + 1
         output_file.write("\n")
 
 def printValues(output_file, mean_values, desviations):
     output_file.write("\nmv\t")
-    for i in mean_values:
-        output_file.write(str("%.3f" % i)+"\t")
+    for i in mean_values: output_file.write(str("%.3f" % i)+"\t")
     output_file.write("\nsd\t")
-    for i in desviations:
-        output_file.write(str("%.3f" % i)+"\t")
+    for i in desviations: output_file.write(str("%.3f" % i)+"\t")
     output_file.write("\n")
 
 def standardise(p, mean_values, desviations):
@@ -78,21 +69,17 @@ def standardise(p, mean_values, desviations):
 def calculateValues(mean_values, desviations, features):
     for j in range(n_features):
         mean_values.append(0)
-        for i in range(n_objects):
-            mean_values[j] = mean_values[j] + float(features[i][j])
+        for i in range(n_objects): mean_values[j] = mean_values[j] + float(features[i][j])
         mean_values[j] = mean_values[j] / n_objects
         desviations.append(0)
-        for i in range(n_objects):
-            desviations[j] = desviations[j] + (float(features[i][j])-mean_values[j])**2
+        for i in range(n_objects): desviations[j] = desviations[j] + (float(features[i][j])-mean_values[j])**2
         desviations[j] = math.sqrt(desviations[j] / n_objects)
 
 def calculateWeights(output_file, gravity_centers, mean_values, desviations):
     w = [[0.0 for i in range(n_features+1)] for j in range(n_classes)]
     for i in range(n_classes):
-        for j in range(n_features):
-            w[i][j] = 2*gravity_centers[i][j]
-        for k in range(n_features):
-            w[i][j+1] = w[i][j+1] + gravity_centers[i][k]**2
+        for j in range(n_features): w[i][j] = 2*gravity_centers[i][j]
+        for k in range(n_features): w[i][j+1] = w[i][j+1] + gravity_centers[i][k]**2
         w[i][j+1] = w[i][j+1]*-1
     output_file.write("\nWeights before standardisation:\n")
     printWeights(output_file, w)
@@ -114,8 +101,7 @@ def printStatistics(output_file, matrix):
     output_file.write("\n")
     for i in range(n_classes):
         output_file.write(str(i+1)+"\t")
-        for j in range(n_classes):
-            output_file.write("   "+str(matrix[i][j])+"\t")
+        for j in range(n_classes): output_file.write("   "+str("%.1f" % matrix[i][j])+"\t")
         output_file.write("\n")
     #Probabilities a priori
     output_file.write("\nProbabilities a priori:\n")
@@ -155,19 +141,17 @@ def test(output_file, test_file, weights):
         feature = []
         line = f.readline()
         real_class = int(line.split()[0])
-        for j in range(n_features):
-            feature.append(float(line.split()[j+1]))
+        for j in range(n_features): feature.append(float(line.split()[j+1]))
         g = []
         for j in range(n_classes):
             g.append(0.0)
-            for k in range(n_features):
-                g[j] = g[j] + feature[k]*weights[j][k]
+            for k in range(n_features): g[j] = g[j] + feature[k]*weights[j][k]
             g[j] = g[j] + weights[j][k+1]
         assigned_class = g.index(max(g)) + 1
         # print("Max ", str(round(max(g), 2)))
-        output_file.write(str(i+1)+"\t"+str(real_class)+"\t"+str(assigned_class)+"\n")
-        if(assigned_class != real_class):
-            error = error + 1
+        if i < 9: output_file.write(" "+str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t\t"+str(assigned_class)+"\n")
+        else: output_file.write(str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t\t"+str(assigned_class)+"\n")
+        if(assigned_class != real_class): error = error + 1
         cm[real_class-1][assigned_class-1] = cm[real_class-1][assigned_class-1]+1
     error = (100*error)/n_objects
     output_file.write("\nError rate: "+str("%.1f" % error)+" %\n")

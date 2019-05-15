@@ -105,8 +105,11 @@ def main():
         dmin = min(distances)
         assigned_class = int(classes[distances.index(dmin)]) #+1
         if(assigned_class != real_class): errors = errors + 1
-        cm[real_class-1][assigned_class-1] = cm[real_class-1][assigned_class-1] + 1;
-        output.write(str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t\t\t"+str(assigned_class)+"\n")
+        cm[real_class-1][assigned_class-1] = cm[real_class-1][assigned_class-1] + 1
+
+        if i < 9: output.write(" "+str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t"+str(assigned_class)+"\n")
+        else: output.write(str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t"+str(assigned_class)+"\n")
+        # output.write(str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t\t\t"+str(assigned_class)+"\n")
     #Print results
     d = 100.0 * errors / n_objects_tst
     printStatistics(output, d, cm)

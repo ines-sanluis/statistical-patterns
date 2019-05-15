@@ -7,9 +7,7 @@ global n_features
 global n_objects
 
 def readFile(file, classes, features):
-    global n_classes
-    global n_features
-    global n_objects
+    global n_classes, n_features, n_objects
     f = open(file, "r")
     header = f.readline()
     n_classes = int(header.split()[0])
@@ -19,20 +17,17 @@ def readFile(file, classes, features):
         feature = []
         line = f.readline()
         classes.append(line.split()[0])
-        for j in range(n_features):
-            feature.append(line.split()[j+1])
+        for j in range(n_features): feature.append(line.split()[j+1])
         features.append(feature)
     f.close()
 
 def calculateValues(mean_values, desviations, features):
     for j in range(n_features):
         mean_values.append(0)
-        for i in range(n_objects):
-            mean_values[j] = mean_values[j] + float(features[i][j])
+        for i in range(n_objects): mean_values[j] = mean_values[j] + float(features[i][j])
         mean_values[j] = mean_values[j] / n_objects
         desviations.append(0)
-        for i in range(n_objects):
-            desviations[j] = desviations[j] + (float(features[i][j])-mean_values[j])**2
+        for i in range(n_objects): desviations[j] = desviations[j] + (float(features[i][j])-mean_values[j])**2
         desviations[j] = math.sqrt(desviations[j] / n_objects)
 
 def numberElementsClass(file, classes):
@@ -51,11 +46,9 @@ def calculateGravityCenter(classes, features, elements_for_class):
     p = [[0.0 for i in range(n_features)] for j in range(n_classes)]
     for i in range(n_objects):
         clase = int(classes[i]) - 1
-        for j in range(n_features):
-            p[clase][j] = p[clase][j] + float(features[i][j])
+        for j in range(n_features): p[clase][j] = p[clase][j] + float(features[i][j])
     for i in range(n_classes):
-        for j in range(n_features):
-            p[i][j] = p[i][j] / elements_for_class[i]
+        for j in range(n_features): p[i][j] = p[i][j] / elements_for_class[i]
     return p
 
 def printMatrix(output, matrix):
@@ -70,8 +63,7 @@ def standardise(p, mean_values, desviations):
         for j in range(n_features):
             p[i][j] = (p[i][j] - mean_values[j])/desviations[j];
 
-def train(file, mean_values, desviations):
-    output = open("results-mine.txt", "w")
+def train(file, mean_values, desviations, output):
     classes = []
     features = []
     readFile(file, classes, features)
@@ -83,11 +75,9 @@ def train(file, mean_values, desviations):
     standardise(p, mean_values, desviations)
     output.write("\nClass gravity centers after standardisation:\n")
     printMatrix(output, p)
-    output.close()
     return p
 
-def test(file, mean_values, desviations, p):
-    output = open("results-mine.txt", "a")
+def test(file, mean_values, desviations, p, output):
     f = open(file, "r")
     header = f.readline()
     n_classes = int(header.split()[0])
@@ -109,22 +99,25 @@ def test(file, mean_values, desviations, p):
                 distances[k] = distances[k] + (feature[z]-p[k][z])**2
         dmin = min(distances)
         assigned_class = distances.index(dmin) + 1
-        output.write(str(i+1)+"\t"+str(real_class)+"\t"+str(assigned_class)+"\n")
+        if i < 9: output.write(" "+str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t"+str(assigned_class)+"\n")
+        else: output.write(str(i+1)+"\t\t\t\t\t"+str(real_class)+"\t\t\t\t\t"+str(assigned_class)+"\n")
         if (real_class != assigned_class): error = error+1
     print("Number of errors: ", error)
     error = (100*error)/n_objects
     print("Error rate: %.1f" % error)
     output.write("\nError rate: "+str("%.1f" % error))
-    output.close()
 
 def main():
     train_file =  input("Enter train file: ")
     test_file = input("Enter test file: ")
     output_file = input("Enter output file: ")
-    
+    output = open(output_file, "w")
+
     mean_values = []
     desviations = []
-    p = train(train_file, mean_values, desviations)
-    test(test_file, mean_values, desviations, p)
+    p = train(train_file, mean_values, desviations, output)
+    test(test_file, mean_values, desviations, p, output)
+
+    output.close()
 
 main()
