@@ -10,6 +10,8 @@ global n_features
 global n_objects
 global selected
 
+# Training a linear classifier based on error correction algorithm
+
 def readFile(file, classes, features):
     global n_classes, n_features, n_objects, file_size, selected
     f = open(file,  "r")
