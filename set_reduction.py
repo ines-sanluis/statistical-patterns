@@ -2,6 +2,7 @@ import sys
 import math
 import numpy as np
 
+# Reerence set reduction using Tomeks algorithm.
 def main():
     print("Reference set reduction by Tomeks algorithm.")
     train_file =  input("Reference set file: ")
