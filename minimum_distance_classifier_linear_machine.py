@@ -1,6 +1,7 @@
 import sys
 import math
 import numpy as np
+# Minimum distance classifier as a linear machine
 
 def readFile(file, classes, features):
     global n_classes, n_features, n_objects
